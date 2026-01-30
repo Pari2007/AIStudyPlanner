@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Goal Optimizer - AI Study Planner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html, body {
+        height: 100%;
+        background: #ffffff;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        color: #1d1d1f;
+        background: linear-gradient(180deg, #ffffff 0%, #f5f5f7 100%);
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 2rem;
+        border-bottom: 1px solid #e5e5e7;
+        background: #ffffff;
+        margin: -2rem -2rem 2rem -2rem;
+        border-radius: 0 0 0.875rem 0.875rem;
+      }
+
+      header h1 {
+        font-size: 1.75rem;
+        font-weight: 600;
+        letter-spacing: -0.5px;
+        color: #1d1d1f;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .nav-button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        background: #0084ff;
+        color: white;
+        border: none;
+        border-radius: 0.875rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+      }
+
+      .nav-button:hover {
+        background: #0073e6;
+      }
+
+      .nav-button:active {
+        background: #005fcc;
+      }
+
+      .content {
+        flex: 1;
+      }
+
+      .section {
+        background: #ffffff;
+        padding: 2rem;
+        border-radius: 0.875rem;
+        border: 1px solid #e5e5e7;
+        margin-bottom: 2rem;
+      }
+
+      .section h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: #1d1d1f;
+      }
+
+      .section p {
+        color: #666;
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+      }
+
+      .feature-list-items {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+
+      .feature-list-item {
+        color: #666;
+        font-size: 1rem;
+        padding-left: 1.5rem;
+        border-left: 3px solid #0084ff;
+        line-height: 1.6;
+      }
+
+      .optimizer-container {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        padding: 2rem;
+        border-radius: 0.875rem;
+        margin-bottom: 2rem;
+        color: white;
+        box-shadow: 0 4px 6px rgba(79, 172, 254, 0.1);
+      }
+
+      .optimizer-container h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .goal-card {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 0.625rem;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .goal-card h4 {
+        font-size: 1.1rem;
+        margin-bottom: 0.75rem;
+        font-weight: 600;
+      }
+
+      .goal-card p {
+        margin-bottom: 0.75rem;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .goal-status {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 0.375rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+
+      .optimize-btn {
+        width: 100%;
+        padding: 1rem 1.5rem;
+        background: white;
+        color: #4facfe;
+        border: none;
+        border-radius: 0.625rem;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: inherit;
+        margin-top: 1rem;
+      }
+
+      .optimize-btn:hover {
+        background: #f5f5f7;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      @media (max-width: 768px) {
+        header {
+          flex-direction: column;
+          gap: 1rem;
+          align-items: flex-start;
+        }
+
+        .container {
+          padding: 1rem;
+        }
+
+        .section {
+          padding: 1.5rem;
+        }
+
+        header h1 {
+          font-size: 1.5rem;
+        }
+
+        .nav-button {
+          align-self: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>
+          <i class="fas fa-bullseye"></i>
+          Goal Optimizer
+        </h1>
+        <a href="/" class="nav-button">
+          <i class="fas fa-comments"></i>
+          Back to Chat
+        </a>
+      </header>
+
+      <div class="content">
+        <div class="optimizer-container">
+          <h3>
+            <i class="fas fa-wand-magic-sparkles"></i>
+            Optimize Your Study Goals
+          </h3>
+          <div class="goal-card">
+            <h4>Current Goal: Master Data Structures</h4>
+            <p>Target: 40 hours of study | Timeline: 6 weeks</p>
+            <p>Current Progress: 12 hours completed (30%)</p>
+            <span class="goal-status">
+              <i class="fas fa-check-circle" style="margin-right: 0.5rem;"></i> On Track
+            </span>
+          </div>
+          <div class="goal-card">
+            <h4>Current Goal: Advanced Python</h4>
+            <p>Target: 25 hours of study | Timeline: 4 weeks</p>
+            <p>Current Progress: 18 hours completed (72%)</p>
+            <span class="goal-status">
+              <i class="fas fa-check-circle" style="margin-right: 0.5rem;"></i> Ahead of Schedule
+            </span>
+          </div>
+          <button class="optimize-btn" id="optimize-btn">
+            <i class="fas fa-brain"></i> Optimize Goals Now
+          </button>
+        </div>
+
+        <div class="section">
+          <h2>About Goal Optimizer</h2>
+          <p>AI-powered system that continuously optimizes your study goals based on your progress, available time, and learning patterns.</p>
+          <p>Ensures your objectives remain challenging yet achievable throughout your learning journey.</p>
+        </div>
+
+        <div class="section">
+          <h2>How It Works</h2>
+          <div class="feature-list-items">
+            <div class="feature-list-item">
+              <strong>Analyzes Your Progress:</strong> The system reviews how you're progressing toward your current goals.
+            </div>
+            <div class="feature-list-item">
+              <strong>Evaluates Your Pace:</strong> Determines if you're on track, ahead, or behind schedule.
+            </div>
+            <div class="feature-list-item">
+              <strong>Considers Your Patterns:</strong> Factors in your study habits, focus times, and learning speed.
+            </div>
+            <div class="feature-list-item">
+              <strong>Provides Adjustments:</strong> Suggests realistic modifications to keep goals achievable.
+            </div>
+            <div class="feature-list-item">
+              <strong>Maintains Motivation:</strong> Balances challenge with achievability for sustained motivation.
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>Optimization Strategies</h2>
+          <div class="feature-list-items">
+            <div class="feature-list-item">
+              <i class="fas fa-check-circle" style="color: #4facfe; margin-right: 0.75rem;"></i> <strong>Dynamic Adjustment:</strong> Goals adapt based on real-time performance data.
+            </div>
+            <div class="feature-list-item">
+              <i class="fas fa-check-circle" style="color: #4facfe; margin-right: 0.75rem;"></i> <strong>Deadline Flexibility:</strong> Intelligently reschedule deadlines when needed.
+            </div>
+            <div class="feature-list-item">
+              <i class="fas fa-check-circle" style="color: #4facfe; margin-right: 0.75rem;"></i> <strong>Scope Optimization:</strong> Adjust learning scope to match your available time.
+            </div>
+            <div class="feature-list-item">
+              <i class="fas fa-check-circle" style="color: #4facfe; margin-right: 0.75rem;"></i> <strong>Difficulty Calibration:</strong> Maintain optimal challenge levels.
+            </div>
+            <div class="feature-list-item">
+              <i class="fas fa-check-circle" style="color: #4facfe; margin-right: 0.75rem;"></i> <strong>Motivation Boost:</strong> Celebrate milestones and provide encouragement.
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>Benefits</h2>
+          <div class="feature-list-items">
+            <div class="feature-list-item">
+              <i class="fas fa-star" style="color: #4facfe; margin-right: 0.75rem;"></i> Never set unrealistic goals again
+            </div>
+            <div class="feature-list-item">
+              <i class="fas fa-star" style="color: #4facfe; margin-right: 0.75rem;"></i> Stay motivated with achievable targets
+            </div>
+            <div class="feature-list-item">
+              <i class="fas fa-star" style="color: #4facfe; margin-right: 0.75rem;"></i> Continuously improve and adapt
+            </div>
+            <div class="feature-list-item">
+              <i class="fas fa-star" style="color: #4facfe; margin-right: 0.75rem;"></i> Build confidence with success
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const optimizeBtn = document.getElementById("optimize-btn");
+      optimizeBtn.addEventListener("click", async () => {
+        optimizeBtn.disabled = true;
+        optimizeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Optimizing...';
+        
+        try {
+          // Simulate optimization
+          setTimeout(() => {
+            alert("✓ Goals optimized successfully! Your new recommendations have been applied.");
+            optimizeBtn.disabled = false;
+            optimizeBtn.innerHTML = '<i class="fas fa-brain"></i> Optimize Goals Now';
+          }, 2000);
+        } catch (error) {
+          console.error("Error optimizing goals:", error);
+          alert("Failed to optimize goals");
+          optimizeBtn.disabled = false;
+          optimizeBtn.innerHTML = '<i class="fas fa-brain"></i> Optimize Goals Now';
+        }
+      });
+    </script>
+  </body>
+</html>

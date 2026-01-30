@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Progress - AI Study Planner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html, body {
+        height: 100%;
+        background: #ffffff;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        color: #1d1d1f;
+        background: linear-gradient(180deg, #ffffff 0%, #f5f5f7 100%);
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 2rem;
+        border-bottom: 1px solid #e5e5e7;
+        background: #ffffff;
+        margin: -2rem -2rem 2rem -2rem;
+        border-radius: 0 0 0.875rem 0.875rem;
+      }
+
+      header h1 {
+        font-size: 1.75rem;
+        font-weight: 600;
+        letter-spacing: -0.5px;
+        color: #1d1d1f;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .nav-button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        background: #0084ff;
+        color: white;
+        border: none;
+        border-radius: 0.875rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+      }
+
+      .nav-button:hover {
+        background: #0073e6;
+      }
+
+      .nav-button:active {
+        background: #005fcc;
+      }
+
+      .content {
+        flex: 1;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 0.875rem;
+        border: 1px solid #e5e5e7;
+        text-align: center;
+      }
+
+      .stat-card.blue {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+      }
+
+      .stat-card.green {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        border: none;
+        color: white;
+      }
+
+      .stat-card.orange {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        border: none;
+        color: white;
+      }
+
+      .stat-card.purple {
+        background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+        border: none;
+        color: white;
+      }
+
+      .stat-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .stat-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-label {
+        font-size: 1rem;
+        font-weight: 500;
+        opacity: 0.9;
+      }
+
+      .section {
+        background: #ffffff;
+        padding: 2rem;
+        border-radius: 0.875rem;
+        border: 1px solid #e5e5e7;
+        margin-bottom: 2rem;
+      }
+
+      .section h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: #1d1d1f;
+      }
+
+      .section p {
+        color: #666;
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+      }
+
+      .feature-list-items {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+
+      .feature-list-item {
+        color: #666;
+        font-size: 1rem;
+        padding-left: 1.5rem;
+        border-left: 3px solid #0084ff;
+        line-height: 1.6;
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: #e5e5e7;
+        border-radius: 4px;
+        margin-top: 1rem;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        width: 75%;
+        border-radius: 4px;
+      }
+
+      @media (max-width: 768px) {
+        header {
+          flex-direction: column;
+          gap: 1rem;
+          align-items: flex-start;
+        }
+
+        .container {
+          padding: 1rem;
+        }
+
+        .section {
+          padding: 1.5rem;
+        }
+
+        header h1 {
+          font-size: 1.5rem;
+        }
+
+        .nav-button {
+          align-self: flex-start;
+        }
+
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>
+          <i class="fas fa-chart-line"></i>
+          Progress
+        </h1>
+        <a href="/" class="nav-button">
+          <i class="fas fa-comments"></i>
+          Back to Chat
+        </a>
+      </header>
+
+      <div class="content">
+        <div class="stats-grid">
+          <div class="stat-card blue">
+            <div class="stat-icon"><i class="fas fa-clock"></i></div>
+            <div class="stat-value" id="total-hours">0</div>
+            <div class="stat-label">Total Study Hours</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-icon"><i class="fas fa-book"></i></div>
+            <div class="stat-value" id="topics-covered">0</div>
+            <div class="stat-label">Topics Covered</div>
+          </div>
+          <div class="stat-card orange">
+            <div class="stat-icon"><i class="fas fa-fire"></i></div>
+            <div class="stat-value" id="day-streak">0</div>
+            <div class="stat-label">Day Streak</div>
+          </div>
+          <div class="stat-card purple">
+            <div class="stat-icon"><i class="fas fa-star"></i></div>
+            <div class="stat-value" id="average-focus">0%</div>
+            <div class="stat-label">Average Focus</div>
+          </div>
+        </div>
+
+        <div class="section" id="subject-progress-section" style="display: none;">
+          <h2>Subject Progress</h2>
+          <div id="subject-progress-content">
+            <!-- Subject progress will be loaded here -->
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>Log Study Hours</h2>
+          <p>Track your progress by logging the hours you've studied for your current subject.</p>
+          <form id="progress-form" class="mt-4">
+            <div class="mb-4">
+              <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+              <input type="text" id="subject" name="subject" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="No timetable created yet">
+            </div>
+            <div class="mb-4">
+              <label for="hours-studied" class="block text-sm font-medium text-gray-700 mb-2">Hours Studied</label>
+              <input type="number" id="hours-studied" name="hours_studied" min="0" step="0.5" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter hours (e.g., 2.5)">
+            </div>
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <i class="fas fa-plus mr-2"></i>Log Hours
+            </button>
+          </form>
+          <div id="progress-message" class="mt-4 hidden"></div>
+        </div>
+
+        <div class="section">
+          <h2>How It Works</h2>
+          <div class="feature-list-items">
+            <div class="feature-list-item">
+              <strong>Automatic Tracking:</strong> The system logs all your study sessions and activities.
+            </div>
+            <div class="feature-list-item">
+              <strong>Analytics Dashboard:</strong> View comprehensive stats about your learning progress.
+            </div>
+            <div class="feature-list-item">
+              <strong>Performance Insights:</strong> Understand your strengths and areas for improvement.
+            </div>
+            <div class="feature-list-item">
+              <strong>Consistency Streaks:</strong> Build and maintain consecutive days of productive studying.
+            </div>
+            <div class="feature-list-item">
+              <strong>Topic Mastery:</strong> Track which topics you've covered and how well you've mastered them.
+            </div>
+          </div>
+        </div>
+
+        <div class="section" id="quiz-section">
+          <h2>Subject Quiz & Analytics</h2>
+          <p>Take a short quiz tailored to your current subject to identify strengths and weak areas. Results provide topic-level analytics and study recommendations.</p>
+
+          <div style="margin-top: 1rem; display:flex; gap:0.5rem; align-items:center;">
+            <button id="generate-quiz-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none">Start Quiz</button>
+            <button id="view-history-btn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none">View Quiz History</button>
+          </div>
+
+          <div id="quiz-container" style="margin-top:1rem; display:none;">
+            <form id="quiz-form"></form>
+            <div style="margin-top:1rem;">
+              <button id="submit-quiz-btn" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none">Submit Answers</button>
+            </div>
+          </div>
+
+          <div id="quiz-results" style="margin-top:1.5rem; display:none;"></div>
+          <div id="quiz-history" style="margin-top:1.5rem; display:none;"></div>
+        </div>
+
+        <div class="section">
+          <h2>Benefits</h2>
+          <div class="feature-list-items">
+            <div class="feature-list-item">
+              <i class="fas fa-check-circle" style="color: #0084ff; margin-right: 0.75rem;"></i> Visualize your learning journey
+            </div>
+            <div class="feature-list-item">
+              <i class="fas fa-check-circle" style="color: #0084ff; margin-right: 0.75rem;"></i> Stay motivated with clear milestones
+            </div>
+            <div class="feature-list-item">
+              <i class="fas fa-check-circle" style="color: #0084ff; margin-right: 0.75rem;"></i> Identify patterns in your study habits
+            </div>
+            <div class="feature-list-item">
+              <i class="fas fa-check-circle" style="color: #0084ff; margin-right: 0.75rem;"></i> Make data-driven improvements
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Load progress data when page loads
+      document.addEventListener('DOMContentLoaded', loadProgress);
+
+      // Handle form submission
+      document.getElementById('progress-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const subject = document.getElementById('subject').value;
+        const hoursStudied = parseFloat(document.getElementById('hours-studied').value);
+        
+        if (!subject) {
+          showMessage('Please create a timetable first to track progress.', 'error');
+          return;
+        }
+        
+        if (hoursStudied <= 0) {
+          showMessage('Please enter a valid number of hours studied.', 'error');
+          return;
+        }
+        
+        try {
+          const response = await fetch('/api/progress/update', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              subject: subject,
+              hours_studied: hoursStudied
+            })
+          });
+          
+          const data = await response.json();
+          
+          if (response.ok) {
+            showMessage(`Successfully logged ${hoursStudied} hours for ${subject}!`, 'success');
+            document.getElementById('hours-studied').value = '';
+            loadProgress(); // Reload progress data
+          } else {
+            showMessage(data.error || 'Failed to update progress.', 'error');
+          }
+        } catch (error) {
+          console.error('Error updating progress:', error);
+          showMessage('Failed to update progress. Please try again.', 'error');
+        }
+      });
+
+      async function loadProgress() {
+        try {
+          const response = await fetch('/api/progress');
+          const data = await response.json();
+          
+          if (response.ok) {
+            // Update stats
+            document.getElementById('total-hours').textContent = data.total_hours.toFixed(1);
+            document.getElementById('topics-covered').textContent = data.topics_covered;
+            document.getElementById('day-streak').textContent = data.day_streak;
+            document.getElementById('average-focus').textContent = `${data.average_focus}%`;
+            
+            // Update subject field
+            const subjectInput = document.getElementById('subject');
+            if (data.current_subject) {
+              subjectInput.value = data.current_subject;
+              subjectInput.placeholder = '';
+            } else {
+              subjectInput.value = '';
+              subjectInput.placeholder = 'No timetable created yet';
+            }
+            
+            // Show subject progress
+            updateSubjectProgress(data.subjects);
+          }
+        } catch (error) {
+          console.error('Error loading progress:', error);
+        }
+      }
+
+      function updateSubjectProgress(subjects) {
+        const section = document.getElementById('subject-progress-section');
+        const content = document.getElementById('subject-progress-content');
+        
+        if (Object.keys(subjects).length === 0) {
+          section.style.display = 'none';
+          return;
+        }
+        
+        section.style.display = 'block';
+        content.innerHTML = '<h3>Subject Progress</h3>';
+        
+        for (const [subject, progress] of Object.entries(subjects)) {
+          const percentage = progress.total_hours > 0 ? 
+            Math.min((progress.hours_studied / progress.total_hours) * 100, 100) : 0;
+          
+          const progressHtml = `
+            <p style="margin-top: 1.5rem;"><strong>${subject}:</strong> ${progress.hours_studied.toFixed(1)}/${progress.total_hours} hours (${percentage.toFixed(1)}% Complete)</p>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: ${percentage}%; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);"></div>
+            </div>
+          `;
+          content.innerHTML += progressHtml;
+        }
+      }
+
+      function showMessage(message, type) {
+        const messageDiv = document.getElementById('progress-message');
+        messageDiv.textContent = message;
+        messageDiv.className = `mt-4 p-3 rounded-md ${type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
+        messageDiv.classList.remove('hidden');
+        
+        // Hide message after 5 seconds
+        setTimeout(() => {
+          messageDiv.classList.add('hidden');
+        }, 5000);
+      }
+
+      // Quiz functionality
+      document.addEventListener('DOMContentLoaded', () => {
+        const genBtn = document.getElementById('generate-quiz-btn');
+        const submitBtn = document.getElementById('submit-quiz-btn');
+        const historyBtn = document.getElementById('view-history-btn');
+
+        if (genBtn) genBtn.addEventListener('click', generateQuiz);
+        if (submitBtn) submitBtn.addEventListener('click', submitQuiz);
+        if (historyBtn) historyBtn.addEventListener('click', viewHistory);
+      });
+
+      async function generateQuiz() {
+        // Hide previous results/history
+        document.getElementById('quiz-results').style.display = 'none';
+        document.getElementById('quiz-history').style.display = 'none';
+
+        try {
+          const res = await fetch('/api/quiz/generate', { method: 'POST' });
+          const data = await res.json();
+          if (!res.ok) {
+            showMessage(data.error || 'Failed to generate quiz.', 'error');
+            return;
+          }
+
+          renderQuestions(data.questions);
+        } catch (err) {
+          console.error('Error generating quiz:', err);
+          showMessage('Failed to generate quiz. Try again.', 'error');
+        }
+      }
+
+      function renderQuestions(questions) {
+        const container = document.getElementById('quiz-container');
+        const form = document.getElementById('quiz-form');
+        form.innerHTML = '';
+
+        questions.forEach((q, idx) => {
+          const qDiv = document.createElement('div');
+          qDiv.style.marginTop = '1rem';
+          qDiv.innerHTML = `
+            <p><strong>Q${idx+1}.</strong> ${q.question}</p>
+          `;
+
+          const opts = document.createElement('div');
+          q.options.forEach((opt, oi) => {
+            const label = document.createElement('label');
+            label.style.display = 'block';
+            label.style.marginTop = '0.25rem';
+            const val = String.fromCharCode(65 + oi);
+            label.innerHTML = `<input type="radio" name="q-${idx}" value="${val}"> ${val}. ${opt}`;
+            opts.appendChild(label);
+          });
+
+          form.appendChild(qDiv);
+          form.appendChild(opts);
+        });
+
+        container.style.display = 'block';
+        // Scroll to quiz
+        container.scrollIntoView({ behavior: 'smooth' });
+      }
+
+      async function submitQuiz(e) {
+        e && e.preventDefault();
+        const form = document.getElementById('quiz-form');
+        if (!form) return;
+
+        const answers = [];
+        const elems = form.querySelectorAll('[name^="q-"]');
+        // Determine number of questions
+        const qs = new Set();
+        elems.forEach(el => {
+          qs.add(el.name);
+        });
+        const qCount = qs.size;
+
+        for (let i = 0; i < qCount; i++) {
+          const name = `q-${i}`;
+          const selected = form.querySelector(`input[name='${name}']:checked`);
+          answers.push(selected ? selected.value : '');
+        }
+
+        try {
+          const res = await fetch('/api/quiz/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ answers })
+          });
+
+          const data = await res.json();
+          if (!res.ok) {
+            showMessage(data.error || 'Failed to submit quiz.', 'error');
+            return;
+          }
+
+          displayQuizResults(data);
+        } catch (err) {
+          console.error('Error submitting quiz:', err);
+          showMessage('Failed to submit quiz. Try again.', 'error');
+        }
+      }
+
+      function displayQuizResults(results) {
+        const el = document.getElementById('quiz-results');
+        el.style.display = 'block';
+        el.innerHTML = '';
+
+        const scoreHtml = `<h3>Score: ${results.correct_answers}/${results.total_questions} (${results.score_percentage.toFixed(1)}%)</h3>`;
+        el.innerHTML += scoreHtml;
+
+        // Topic performance
+        el.innerHTML += '<h4 style="margin-top:0.75rem;">Topic Performance</h4>';
+        for (const [topic, perf] of Object.entries(results.topic_performance || {})) {
+          const pct = ((perf.correct / perf.total) * 100).toFixed(1);
+          el.innerHTML += `<p><strong>${topic}:</strong> ${perf.correct}/${perf.total} (${pct}%)</p>`;
+        }
+
+        // Weak/strong areas
+        if (results.weak_areas && results.weak_areas.length) {
+          el.innerHTML += `<p style="margin-top:0.75rem;"><strong>Weak areas:</strong> ${results.weak_areas.join(', ')}</p>`;
+        }
+        if (results.strong_areas && results.strong_areas.length) {
+          el.innerHTML += `<p><strong>Strong areas:</strong> ${results.strong_areas.join(', ')}</p>`;
+        }
+
+        // Recommendations
+        if (results.recommendations && results.recommendations.length) {
+          el.innerHTML += '<h4 style="margin-top:0.75rem;">Recommendations</h4>';
+          results.recommendations.forEach(r => {
+            el.innerHTML += `<p>- ${r}</p>`;
+          });
+        }
+
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+
+      async function viewHistory() {
+        try {
+          const res = await fetch('/api/quiz/history');
+          const data = await res.json();
+          if (!res.ok) {
+            showMessage(data.error || 'Failed to load history.', 'error');
+            return;
+          }
+
+          const el = document.getElementById('quiz-history');
+          el.style.display = 'block';
+          el.innerHTML = '<h3>Quiz History</h3>';
+          if (!data.history || data.history.length === 0) {
+            el.innerHTML += '<p>No quizzes taken yet.</p>';
+            return;
+          }
+
+          data.history.slice().reverse().forEach(item => {
+            el.innerHTML += `<p><strong>${item.subject}</strong> — ${new Date(item.date).toLocaleString()}: ${item.score.toFixed(1)}% — Weak: ${item.weak_areas.join(', ')}</p>`;
+          });
+          el.scrollIntoView({ behavior: 'smooth' });
+        } catch (err) {
+          console.error('Error loading history:', err);
+          showMessage('Failed to load quiz history.', 'error');
+        }
+      }
+    </script>
+  </body>
+</html>
