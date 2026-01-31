@@ -1,4 +1,4 @@
-Smart AI Study Planner
+**Smart AI Study Planner**
 
 Overview
 
